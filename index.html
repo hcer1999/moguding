@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <div id="boxLogin">
+        <p>
+            <label for="phone">手机号</label>
+            <input id="phone" type="text" value="">
+        </p>
+        <p>
+            <label for="password">密码</label>
+            <input id="password" type="password" value="">
+        </p>
+        <input id="btnLogin" type="button" value="登录">
+        <input id="btnSignLog" type="button" value="签到记录">
+    </div>
+    <div id="boxInfo">
+        <div class="info">
+
+        </div>
+    </div>
+    </div>
+    <script src="js/jquery-3.4.1.js"></script>
+    <script>
+        let data = {};
+        $('#btnLogin').click(function () {
+            let phone = $('#phone')[0].value;
+            let password = $('#password')[0].value;
+            $.post({
+                url: "login.php",
+                data: {
+                    "phone": phone,
+                    "password": password,
+                    "isLogin" : true
+                },
+                success: function (d) {
+                    data = JSON.parse(d);
+                    if (data.code === 200) {
+                        //成功
+                        console.log(data);
+                        let str = '';
+                        $('.info')[0].innerHTML = '';
+                        str = `<p>姓名：${data.data.nikeName}</p>
+                                    <p>性别：${data.data.gender === 1 ? "男" : "女"}</p>
+                                    <p>蘑菇钉ID：${data.data.moguNo}</p>
+                                    <hr>
+                                    <p>学校：${data.data.orgJson.schoolName}</p>
+                                    <p>专业：${data.data.orgJson.majorName}</p>
+                                    <p>院系：${data.data.orgJson.depName}</p>
+                                    <p>班级：${data.data.orgJson.className}</p>
+                                    <p>学号：${data.data.orgJson.studentNumber}</p>`
+                        $('.info').append(str);
+
+                    } else {
+                        //失败
+                        alert(data.msg);
+                    }
+                }
+            });
+        });
+        $('#btnSignLog').click(function () {
+            $.post({
+                url: "signlog.php",
+                data: {
+                    "token": data['data'].token,
+                    "cookie" : data['data'].orgJson.cookie,
+                },
+                success: function (d) {
+                    data = JSON.parse(d);
+                    if (data.code === 200) {
+                        //成功
+                        console.log(data);
+                        let str ='<h2>您一共签到了' + data.data.length + "次</h2>";
+                        $('.info')[0].innerHTML = '';
+                        for (var key in data.data) {
+                            str += `<p>签到位置：${data.data[key].address}</p>
+                                        <p>签到时间：${data.data[key].attendenceTime}</p>
+                                        <p>签到设备：${data.data[key].device}</p>
+                                        <hr>`
+                        }
+                        $('.info').append(str);
+                    } else {
+                        //失败
+                        alert(data.msg);
+                    }
+                }
+            });
+        });
+
+
+
+    </script>
+</body>
+
+</html>

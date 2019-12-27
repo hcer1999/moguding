@@ -1,0 +1,11 @@
+body{
+    background-color: #ccc;
+}
+
+.info{
+    border: 1px solid #1E9FFF;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    padding: 3px;
+}
